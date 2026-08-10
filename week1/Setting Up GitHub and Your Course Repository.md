@@ -245,14 +245,22 @@ Your .gitignore (set to Python when you created the repository) already excludes
 ⠀
 # Troubleshooting
 **GitHub Desktop shows "no local changes" after I created folders.** The folders are empty. Git does not track empty folders. Put a README.md in each — see Part 5.
+
 **I cannot find my repository folder on disk.** In GitHub Desktop: **Repository → Show in Explorer** (Windows) or **Show in Finder** (macOS).
 **"Authentication failed" when pushing.** Sign out and back in: **Settings → Accounts → Sign out**, then sign in again. Your 2FA code will be requested.
+
 **My instructor says they cannot see my repository.** Check three things in order: (1) github.com/<you>/PRG455.263 → **Settings → Collaborators** — is danny-arroway listed? (2) Has the invitation expired? Invitations lapse after seven days; remove and re-add if so. (3) Did you push? A commit that exists only on your laptop is invisible to everyone, private repository or not.
+
 **I registered GitHub with the wrong email address.** You do not need a new account. On github.com: **Settings → Emails → Add email address**, enter your Gmail address, verify it from the message GitHub sends, then set it as **Primary**. You may then remove the old address.
+
 **I set my repository to public by mistake.** github.com → repository → **Settings** → **Danger Zone** → **Change repository visibility** → **Make private**. If it was public and contained work from a lab test, tell your instructor — say so early, because it looks very different explained late.
+
 **I created the repository in the wrong folder.** Delete the local folder, delete the repository on github.com (**Settings → General → Danger Zone → Delete this repository**), and start Part 4 again. Do this now, in Week 1, while it costs you five minutes.
+
 **I named it** PRG455-263 **or** prg455.263 **by mistake.** On github.com: **Settings → General → Repository name**, rename it, then in GitHub Desktop remove and re-clone the repository so the local copy matches.
+
 **My repository is inside OneDrive and Git is behaving strangely.** Move it out of the synced folder and re-clone from GitHub. This does not resolve itself.
+
 **I lost my phone and cannot get a 2FA code.** Use one of the recovery codes you saved in Step 1.3. If you did not save them, contact GitHub Support immediately — recovery is slow and may not succeed.
 
 # Sign-off checklist
