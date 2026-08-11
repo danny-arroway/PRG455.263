@@ -60,9 +60,9 @@ Write the version your instructor announces in the Week 1 lab into this box and 
 ```
 COURSE STANDARD FIRMWARE
 
-UIFlow2 firmware for CoreS3, version: _______________________
+UIFlow2 firmware for CoreS3, version: ________v2.5.0_______________
 
-Flashed on (date): _______________________
+Flashed on (date): ________2026-07-31_______________
 ```
 
 **Do not accept M5Burner's offer to update the firmware later in the term.** If your device
