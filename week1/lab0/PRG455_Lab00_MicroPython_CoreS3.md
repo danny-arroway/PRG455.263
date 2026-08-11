@@ -113,7 +113,8 @@ M5Burner is M5Stack's official flashing tool. It downloads firmware and writes i
 
 1. Go to **docs.m5stack.com** and find the M5Burner download, or search M5Stack's site for
    "M5Burner".
-   [Link: M5Burner](https://docs.m5stack.com/en/download)
+   <a href="https://docs.m5stack.com/en/download" target="_blank" rel="noopener">Link: M5Burner</a>
+
 2. Download the version for your operating system.
    - **Windows and Linux:** the download is an archive. **Extract it first**, then run the
      application from the extracted folder. Running it from inside the zip fails in confusing
