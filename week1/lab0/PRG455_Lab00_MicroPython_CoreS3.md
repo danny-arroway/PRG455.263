@@ -111,20 +111,48 @@ If nothing appears, press and hold the **power button on the left side** for abo
 
 M5Burner is M5Stack's official flashing tool. It downloads firmware and writes it to the device.
 
-1. Go to **docs.m5stack.com** and find the M5Burner download, or search M5Stack's site for
-   "M5Burner".
-   <a href="https://docs.m5stack.com/en/download" target="_blank">Link to M5Burner</a>
-
-2. Download the version for your operating system.
+1. Go to the official M5Stack download page:
+   <a href="https://docs.m5stack.com/en/download" target="_blank" rel="noopener">https://docs.m5stack.com/en/download</a>
+2. Download the **M5Burner** version for your operating system.
    - **Windows and Linux:** the download is an archive. **Extract it first**, then run the
      application from the extracted folder. Running it from inside the zip fails in confusing
      ways.
-   - **macOS:** drag it to Applications. If macOS refuses to open it because it is from an
-     unidentified developer, right-click the app and choose **Open**, then confirm.
+   - **macOS:** drag it to Applications and launch it from there. macOS will very likely block
+     it the first time — see Step 2.1 below.
 3. Launch M5Burner.
-4. **Create an M5Stack account and log in.** M5Burner requires it to download firmware. Use your
-   Gmail address, the same one you used for GitHub. This is a third account for this course —
-   record it alongside the others.
+
+### Step 2.1 — ⚠️ macOS blocks M5Burner the first time
+
+M5Burner is not distributed through the App Store, so macOS refuses to run it until you
+explicitly allow it. **The old advice of right-clicking the app and choosing "Open" no longer
+works** on current versions of macOS — right-clicking now offers only *Move to Trash*, which is
+not what you want.
+
+Do this instead:
+
+1. Double-click **M5Burner** in Applications. A dialog appears saying macOS could not verify
+   that the app is free of malware.
+2. **Click "Done."** Do **not** click *Move to Trash*. This first attempt is required — it is
+   what tells macOS there is something to approve.
+3. Open **System Settings** (Apple menu → System Settings).
+4. Click **Privacy & Security** in the sidebar.
+5. **Scroll down to the Security section**, near the bottom of the page. You will see a message
+   naming M5Burner and saying it was blocked.
+6. Click **Open Anyway**.
+7. Authenticate with Touch ID, your Mac password, or your Apple Account password.
+8. A final confirmation dialog appears. Click **Open Anyway** again.
+
+M5Burner now launches, and it will launch normally every time from now on.
+
+> **If there is no "Open Anyway" button in Privacy & Security**, macOS has forgotten the blocked
+> launch — the button only appears for a short period after the attempt. Go back to step 1, try
+> to open the app again, then return to System Settings immediately.
+
+### Step 2.2 — Create an M5Stack account
+
+M5Burner requires an account to download firmware. Register and log in from inside the
+application. Use your Gmail address, the same one you used for GitHub. This is a third account
+for this course — record it alongside the others.
 
 ### Verification 1
 
@@ -590,6 +618,7 @@ Confirm the files are visible on github.com before you leave the lab.
 
 | Symptom | Cause and fix |
 |---|---|
+| macOS will not open M5Burner; right-clicking only offers "Move to Trash" | Gatekeeper has blocked it. Try to open it once, click **Done**, then System Settings → Privacy & Security → scroll to Security → **Open Anyway**. Full steps in Part 2, Step 2.1. |
 | M5Burner never says "Found New Device" | Charge-only cable, in nine cases out of ten. Try a different cable, then a different USB port, and remove any hub. |
 | No COM port / no `/dev/cu.usbmodem*` at all | Same cause. Cable first, always. |
 | Burn fails partway through | Another program is holding the port — close every terminal, Thonny window, and VS Code serial monitor. Then re-enter download mode and retry. Lower the baud rate in M5Burner if it fails again. |
