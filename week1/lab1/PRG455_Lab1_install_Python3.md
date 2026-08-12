@@ -1,8 +1,8 @@
-# PRG455 — Installing Python 3
+# PRG455 — Lab 1 Installing Python 3 on your personal Laptop/Desktop computer
 
 **Week 1 · Student handout · Complete before your Week 2 lab**
 
-This handout installs Python 3 on your computer and verifies that everything this course needs
+This handout details installing Python 3 on your computer and verifies that everything this course needs
 actually works. Do this **first**, before the Claude Pro / VS Code handout and before the Core S3
 handout — both of them assume a working Python.
 

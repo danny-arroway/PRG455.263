@@ -1,6 +1,6 @@
-# PRG455 — Lab 0 Part B: MicroPython on the M5Stack Core S3
+# PRG455 — Lab 2 MicroPython on the M5Stack Core S3
 
-**Week 1 · Student handout · Complete before your Week 2 lab**
+**Week 2 · Student handout · Complete before your Week 3 lab**
 
 This handout takes you from an unopened Core S3 to a device running MicroPython, connected to
 your PC, streaming data over the USB serial port, and displaying text on its screen.
@@ -13,7 +13,7 @@ that is your problem to solve at 9:15 on a test morning.
 **Estimated time:** 60–90 minutes.
 
 **Prerequisite:** you must have completed the GitHub handout and the Claude Pro / VS Code
-handout first. Python 3.12+ must already be installed and working on your PC.
+handout first. Python 3.12+ must already be installed and working on your Laptop/PC.
 
 ---
 
@@ -230,7 +230,7 @@ The screen stays blank in download mode. That is correct, not a fault.
      authentication that this device cannot use, and you should not be typing your college
      password into a firmware tool regardless.
    - Enter your home Wi-Fi, a phone hotspot, or leave it blank. In this Start Mode the device
-     does not connect to a network at all, and everything in Lab 0 works over the USB cable.
+     does not connect to a network at all, and everything in lab 2 works over the USB cable.
 5. Click **Start** / **Next** and wait. Do not unplug the cable. Do not close the laptop lid.
    This takes a minute or two.
 6. When it reports success, reset the device.
@@ -286,7 +286,7 @@ Then log out and back in.
 
 ### Verification 3
 
-You can name your device's port. Write it in `lab0/SETUP.md` — you will type it repeatedly.
+You can name your device's port. Write it in `lab2/SETUP.md` — you will type it repeatedly.
 
 ---
 
@@ -371,7 +371,7 @@ Type these one at a time:
 ```
 
 This prints the MicroPython version running on your device. **Copy the exact output — you will
-paste it into `lab0/SETUP.md`.**
+paste it into `lab2/SETUP.md`.**
 
 ```python
 >>> import os
@@ -419,10 +419,10 @@ device printing lines that your PC program reads.
 
 ### Step 7.1 — Create the file
 
-In VS Code, inside your `PRG455.263` repository, create `lab0/heartbeat.py`:
+In VS Code, inside your `PRG455.263` repository, create `lab2/heartbeat.py`:
 
 ```python
-# PRG455 Lab 0 - serial heartbeat
+# PRG455 Lab 2 - serial heartbeat
 # Prints one CSV line per second over the USB serial connection.
 
 import time
@@ -448,7 +448,7 @@ Read it before you run it. Three things to notice:
 ### Step 7.2 — Run it on the device without installing it
 
 ```
-mpremote run lab0/heartbeat.py
+mpremote run lab2/heartbeat.py
 ```
 
 This uploads and runs the file temporarily without saving it to the device. You should see a new
@@ -468,7 +468,7 @@ Press `Ctrl+C` to stop it.
 ### Verification 5
 
 Lines appear once per second and the numbers increase. **Copy five lines of the output into
-`lab0/SETUP.md`.** This is your proof that the PC-to-device serial link works, which is the
+`lab2/SETUP.md`.** This is your proof that the PC-to-device serial link works, which is the
 foundation of the entire second half of this course.
 
 ---
@@ -479,10 +479,10 @@ Now confirm the screen and the M5 hardware library.
 
 ### Step 8.1 — Create the file
 
-Create `lab0/display_test.py`:
+Create `lab2/display_test.py`:
 
 ```python
-# PRG455 Lab 0 - display test
+# PRG455 lab 2 - display test
 
 import M5
 from M5 import Widgets
@@ -514,7 +514,7 @@ sign-off.
 ### Step 8.2 — Run it
 
 ```
-mpremote run lab0/display_test.py
+mpremote run lab2/display_test.py
 ```
 
 The screen should show the course code, your name, and a counter that increments once per
@@ -555,10 +555,10 @@ photograph goes in your repository.
 
 Optional in Week 1, but attempt it — it is your first real sensor read.
 
-Create `lab0/imu_test.py`:
+Create `lab2/imu_test.py`:
 
 ```python
-# PRG455 Lab 0 - IMU read
+# PRG455 lab 2 - IMU read
 
 import M5
 import time
@@ -572,7 +572,7 @@ while True:
     time.sleep(0.2)
 ```
 
-Run it with `mpremote run lab0/imu_test.py` and **tilt the device while it runs.** The numbers
+Run it with `mpremote run lab2/imu_test.py` and **tilt the device while it runs.** The numbers
 change. One axis reads close to 1.0 when that axis points down — that is gravity, and it is the
 simplest calibration check there is.
 
@@ -595,7 +595,7 @@ mpremote fs ls
 ### Step 10.2 — Back up the existing main.py
 
 ```
-mpremote fs cp :main.py lab0/main_original.py
+mpremote fs cp :main.py lab2/main_original.py
 ```
 
 This copies the file **from** the device (`:main.py`) **to** your PC. Commit it — if you ever
@@ -604,7 +604,7 @@ need to get back to the factory behaviour, you will want it.
 ### Step 10.3 — Install your own
 
 ```
-mpremote fs cp lab0/heartbeat.py :main.py
+mpremote fs cp lab2/heartbeat.py :main.py
 ```
 
 Unplug the device and plug it back in. It now runs your heartbeat program automatically.
@@ -630,10 +630,10 @@ permanently damages the device.
 
 ## Part 11 — Commit your work
 
-Everything you created belongs in `lab0/` in your `PRG455.263` repository:
+Everything you created belongs in `lab2/` in your `PRG455.263` repository:
 
 ```
-lab0/
+lab2/
 ├── README.md
 ├── SETUP.md              ← version outputs, port name, sample serial output
 ├── heartbeat.py
@@ -644,7 +644,7 @@ lab0/
 └── PROMPTS.md            ← any Claude interaction during this lab
 ```
 
-Add this section to `lab0/SETUP.md`:
+Add this section to `lab2/SETUP.md`:
 
 ```markdown
 ## Core S3 setup
@@ -669,7 +669,7 @@ Add this section to `lab0/SETUP.md`:
 Commit and push:
 
 ```
-setup: lab0 Core S3 MicroPython bring-up
+setup: lab2 Core S3 MicroPython bring-up
 ```
 
 Confirm the files are visible on github.com before you leave the lab.
@@ -695,7 +695,7 @@ Confirm the files are visible on github.com before you leave the lab.
 | REPL connects but shows nothing | Press `Ctrl+C` once. A program is running. |
 | Garbled characters in the REPL | Wrong port selected, or you used the `tty.` device on macOS instead of `cu.`. |
 | `AttributeError` on an `M5.` call | Firmware API differs from the listing. Use `dir(M5)` in the REPL, then ask Claude with the error text and the `dir()` output. Record it in `PROMPTS.md`. |
-| Device reboots repeatedly | Usually a program crashing in a loop at startup. `mpremote repl`, `Ctrl+C` during boot, then `mpremote fs cp lab0/main_original.py :main.py` to restore. |
+| Device reboots repeatedly | Usually a program crashing in a loop at startup. `mpremote repl`, `Ctrl+C` during boot, then `mpremote fs cp lab2/main_original.py :main.py` to restore. |
 | Device gets warm | Normal during flashing and Wi-Fi use. Hot enough to be uncomfortable to hold is not — disconnect and report it. |
 | Everything worked, then stopped after I updated the firmware | You changed the pinned version. Re-flash the course standard version from Part 0. |
 
@@ -719,7 +719,7 @@ Bring your Core S3 and your laptop to the lab.
 | 6 | Device screen shows `PRG455.263` and the student's name | |
 | 7 | Student demonstrates interrupting a running program with `Ctrl+C` | |
 | 8 | Factory `main.py` backed up to the repository | |
-| 9 | `lab0/` committed and pushed, visible on github.com | |
+| 9 | `lab2/` committed and pushed, visible on github.com | |
 
 Checks 5 and 7 are the ones that matter. Streaming data over the cable is what the whole second
 half of this course is built on, and being able to stop a runaway program is what stops a bad
