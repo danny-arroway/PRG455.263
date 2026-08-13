@@ -254,8 +254,7 @@ and waiting for you. A black screen here is good news.
 
 ## Part 4 — Confirm the serial port on your PC (5 min)
 
-Your PC now needs to see the device as a serial port. This is the same connection your Tkinter
-programs will use from Week 7 onward, so confirm it works now.
+Your PC now needs to see the device as a serial port, so confirm it works now.
 
 **Windows.** Open **Device Manager** (right-click Start → Device Manager). Expand **Ports (COM &
 LPT)**. You should see a USB Serial Device with a COM number. Note the number.
@@ -402,8 +401,8 @@ the microcontroller.
 Press `Ctrl+]` to leave the REPL and return to your PC's terminal.
 
 > **Keep this in mind all term:** only one program can hold the serial port at a time. If
-> `mpremote` says the port is busy, you have another REPL, a Thonny window, or a Tkinter program
-> still holding it. From Week 7 this becomes the single most common cause of "my program can't
+> `mpremote` says the port is busy, you have another REPL, a Thonny window,
+> still holding it. This becomes the single most common cause of "my program can't
 > find the device."
 
 ### Verification 4
@@ -439,7 +438,7 @@ while True:
 Read it before you run it. Three things to notice:
 
 - `print()` on a microcontroller does not go to a screen. It goes **out of the USB cable** to
-  whatever is listening. That is how your Tkinter application will receive data.
+  whatever is listening. That is how your application will receive data.
 - The output format is deliberate: a tag, then comma-separated fields. In Week 8 you will design
   a protocol; this is the simplest possible version of one.
 - `while True:` runs forever. On a PC that would be a bug. On a microcontroller with no operating
