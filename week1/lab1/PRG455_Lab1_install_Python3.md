@@ -11,6 +11,17 @@ handout — both of them assume a working Python.
 Jump to your operating system, then do **Part 4 (Verification) and Part 5 (Packages) regardless
 of platform.** Those two parts are not optional and they are where the real problems surface.
 
+### Where does the GUI happen?
+
+Not here. The on-screen interface students build in this course runs **on the Core S3 itself**,
+using **M5UI** inside **UIFlow2 MicroPython** — that's a device-side framework, not something you
+`pip install` on your laptop. It's covered in the Core S3 handout, not this one.
+
+The Python you install today is a plain, ordinary desktop Python. Its job is running your own
+scripts and talking to the Core S3 over USB serial (Part 5). It does not need a GUI toolkit, so
+skip any step elsewhere that mentions Tkinter, Tcl/Tk, or similar — that used to be relevant,
+it no longer is.
+
 ---
 
 ## Part 0 — Read this before you install anything
@@ -47,7 +58,7 @@ you are on the wrong download.
 ### If you already have Python installed
 
 Do not immediately uninstall it. Go to **Part 4** first and check the version. If it reports
-3.12 or newer and `python -m tkinter` opens a window, you are already done — skip to Part 5.
+3.12 or newer, you are already done — skip to Part 5.
 
 ---
 
@@ -86,11 +97,8 @@ Run the downloaded `.exe`. On the first screen:
    box in this entire handout. Without it, `python` will not work in any terminal, in VS Code,
    or in Claude Code.
 2. **☑ TICK "Use admin privileges when installing py.exe"** if offered.
-3. Click **Customize installation** (not "Install Now"), and on the optional features screen
-   confirm that **tcl/tk and IDLE** is ticked. This is Tkinter — the entire GUI half of this
-   course depends on it.
-4. Continue, then **Install**.
-5. If the final screen offers **"Disable path length limit,"** click it.
+3. Click **Install Now**.
+4. If the final screen offers **"Disable path length limit,"** click it.
 
 ### Step 1.4 — Open a fresh terminal
 
@@ -122,8 +130,8 @@ try to upgrade it. You are going to install a separate one alongside it.
 3. Open the `.pkg` and follow the installer. Accept the defaults.
 4. When it finishes, a Finder window opens showing the installed folder.
 
-The python.org installer includes Tcl/Tk, so Tkinter works out of the box. This is the main
-reason this course does not recommend the Homebrew version.
+The python.org installer is self-contained and behaves identically across every student's
+machine, which is why this course standardises on it rather than the Homebrew version.
 
 ### Step 2.3 — ⚠️ Run the certificate installer
 
@@ -145,15 +153,13 @@ Open a **new** Terminal window and go to **Part 4**.
 
 ### If you prefer Homebrew
 
-Homebrew works, but you must install Tk separately or Tkinter will be missing:
+Homebrew works fine for this course:
 
 ```bash
 brew install python@3.14
-brew install python-tk@3.14
 ```
 
-Then verify with Part 4 as normal. If `python -m tkinter` fails, the `python-tk` package is
-missing or is for a different Python version.
+Then verify with Part 4 as normal.
 
 ---
 
@@ -175,24 +181,20 @@ supporting packages.
 
 ```bash
 sudo apt update
-sudo apt install python3 python3-pip python3-tk python3-venv
+sudo apt install python3 python3-pip python3-venv
 ```
 
 **Fedora / RHEL:**
 
 ```bash
-sudo dnf install python3 python3-pip python3-tkinter
+sudo dnf install python3 python3-pip
 ```
 
 **Arch / Manjaro:**
 
 ```bash
-sudo pacman -S python python-pip tk
+sudo pacman -S python python-pip
 ```
-
-⚠️ **`python3-tk` (or `python3-tkinter`, or `tk`) is not installed by default on most
-distributions.** Tkinter is the GUI library for the entire first half of this course. Install it
-now.
 
 ### Step 3.3 — Do not remove or replace the system Python
 
@@ -203,7 +205,7 @@ environment. If you need a different version, install it *alongside*:
 ```bash
 sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt update
-sudo apt install python3.14 python3.14-tk python3.14-venv
+sudo apt install python3.14 python3.14-venv
 ```
 
 Then use `python3.14` explicitly rather than changing what `python3` points to.
@@ -238,33 +240,7 @@ If `python` is not recognised on Windows, try `py --version`. If `py` works but 
 not, the PATH check box was missed during installation — re-run the installer, choose
 **Modify**, and tick it.
 
-### Check 2 — ⚠️ Tkinter works
-
-```
-python -m tkinter
-```
-
-**A small window titled `tk` must open**, showing a Tcl/Tk version number. Click the buttons.
-Close it.
-
-This is the single most important check in this handout. Tkinter is the GUI library for the
-entire first half of the course. A Python installation without it looks completely normal until
-Lab 1, when nothing works and the error message points at your code rather than your install.
-
-If it fails:
-
-| Platform | Fix |
-|---|---|
-| Windows | Re-run the installer → **Modify** → tick **tcl/tk and IDLE** |
-| macOS (python.org) | Reinstall using the python.org installer, not Homebrew |
-| macOS (Homebrew) | `brew install python-tk@3.14` |
-| Ubuntu / Debian | `sudo apt install python3-tk` |
-| Fedora | `sudo dnf install python3-tkinter` |
-| Arch | `sudo pacman -S tk` |
-
-**Do not continue until a window opens.**
-
-### Check 3 — pip works
+### Check 2 — pip works
 
 ```
 python -m pip --version
@@ -281,7 +257,7 @@ python -m pip install --upgrade pip
 > code — which produces the maddening result of a package that is definitely installed and
 > definitely cannot be imported.
 
-### Check 4 — The interactive interpreter
+### Check 3 — The interactive interpreter
 
 ```
 python
@@ -310,7 +286,7 @@ This course needs two packages beyond the standard library:
 
 | Package | What it does |
 |---|---|
-| `pyserial` | Lets your Tkinter programs talk to the Core S3 over USB (Week 7 onward) |
+| `pyserial` | Lets your desktop Python scripts talk to the Core S3 over USB (Week 7 onward) |
 | `mpremote` | Command-line tool for the MicroPython device (Lab 0 Part B) |
 
 ### Windows and macOS
@@ -350,8 +326,8 @@ unrelated library and a wall of confusing errors. If you have ever run `pip inst
 
 **Never name one of your own files `serial.py`.** Python searches your current folder before the
 installed packages, so a file called `serial.py` in your lab folder replaces the real library for
-every program in that folder. The same applies to `tkinter.py`, `time.py`, `queue.py`, and any
-other module name. This is a genuinely common and genuinely baffling bug.
+every program in that folder. The same applies to `time.py`, `queue.py`, and any other module
+name. This is a genuinely common and genuinely baffling bug.
 
 ---
 
@@ -388,10 +364,6 @@ command — not a tick, the text your machine produced:
 $ python --version
 [paste]
 
-## Tkinter
-$ python -m tkinter
-[Did a window open? What Tcl/Tk version did it show?]
-
 ## Interpreter path
 >>> sys.executable
 [paste]
@@ -425,9 +397,6 @@ App Execution Aliases are still on. Step 1.1.
 **`python` is not recognised (Windows).**
 PATH was not set during install. Re-run the installer → **Modify** → tick "Add Python to
 environment variables". Then open a **new** terminal — existing windows keep the old PATH.
-
-**`python -m tkinter` fails.**
-See the table in Check 2. Do not proceed without fixing it.
 
 **`pip` SSL certificate errors (macOS).**
 You skipped `Install Certificates.command`. Step 2.3.
@@ -463,13 +432,12 @@ Bring your machine to the lab.
 | # | Check | Initials |
 |---|---|---|
 | 1 | `python --version` reports 3.12 or newer (3.14.x preferred) | |
-| 2 | **`python -m tkinter` opens a window** | |
-| 3 | Student can state which command their machine uses: `python`, `python3`, or `py` | |
-| 4 | `python -m pip --version` works | |
-| 5 | `import serial` succeeds and prints a version | |
-| 6 | `mpremote --help` runs | |
-| 7 | VS Code status bar shows the same interpreter as the terminal | |
-| 8 | `lab0/SETUP.md` committed and pushed with real pasted output | |
+| 2 | Student can state which command their machine uses: `python`, `python3`, or `py` | |
+| 3 | `python -m pip --version` works | |
+| 4 | `import serial` succeeds and prints a version | |
+| 5 | `mpremote --help` runs | |
+| 6 | VS Code status bar shows the same interpreter as the terminal | |
+| 7 | `lab0/SETUP.md` committed and pushed with real pasted output | |
 
-Check 2 is the one that matters. Everything in the first six weeks of this course draws a window
-on your screen, and a Python without Tkinter cannot do it.
+This handout only covers your laptop's Python. The on-device GUI work with M5UI on the Core S3
+is verified separately, in the Core S3 handout.
