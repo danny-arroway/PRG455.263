@@ -134,7 +134,7 @@ code — before you commit:
    same private repo with `danny-arroway` added as a collaborator from
    Week 1 setup).
 2. Place your final `.py` file in `lab3/`.
-3. Commit and push before the deadline: **[INSTRUCTOR: insert due date]**.
+3. Commit and push before the deadline: **[Due Date: One Week from today's date.]**.
 4. If you used AI assistance at any point, make sure `PROMPTS.md` is
    present and up to date in your repo root, per the course AI-use
    policy.
