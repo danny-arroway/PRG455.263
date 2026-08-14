@@ -53,13 +53,31 @@ this order:
 A label next to or below the slider must update live, as the slider is
 dragged, to show the current model's name (e.g. "Model: Qwen2.5-7B").
 
-**FR3 — Quantization slider.** An `M5Slider` with 2 positions
-(`min_value=0`, `max_value=1`): position 0 = "4-bit", position 1 =
-"16-bit". A label must update live to show the current selection.
+**FR3 — Quantization slider.** An `M5Slider` with 4 positions
+(`min_value=0`, `max_value=3`), corresponding to:
 
-**FR4 — Context window slider.** An `M5Slider` with 2 positions
-(`min_value=0`, `max_value=1`): position 0 = "8K tokens", position 1 =
-"256K tokens". A label must update live to show the current selection.
+| Position | Quantization |
+|---|---|
+| 0 | 4-bit |
+| 1 | 8-bit |
+| 2 | 12-bit |
+| 3 | 16-bit |
+
+A label must update live to show the current selection.
+
+**FR4 — Context window slider.** An `M5Slider` with 6 positions
+(`min_value=0`, `max_value=5`), corresponding to:
+
+| Position | Context |
+|---|---|
+| 0 | 8K tokens |
+| 1 | 16K tokens |
+| 2 | 32K tokens |
+| 3 | 64K tokens |
+| 4 | 128K tokens |
+| 5 | 256K tokens |
+
+A label must update live to show the current selection.
 
 **FR5 — Recommend button.** On press, it must:
 1. Read the current position of all three sliders.
@@ -88,11 +106,10 @@ touch alone on the physical CoreS3.
 ### Decision Logic (required — implement exactly)
 
 This is a simplified estimation model for teaching purposes, not a
-precise real-world VRAM calculator (actual VRAM use also depends on
-model architecture details like attention head count, which vary
-per-model in ways this simplified formula doesn't capture) — but it's
-internally consistent and every input combination has one unambiguous
-correct answer, which is what matters for grading.
+precise real-world VRAM calculator, but it's internally consistent and
+every one of the 144 possible input combinations (6 models × 4
+quantization levels × 6 context sizes) has one unambiguous correct
+answer, which is what matters for grading.
 
 **Step 1 — Base VRAM (GB), from model parameter count at 16-bit:**
 
@@ -105,9 +122,32 @@ correct answer, which is what matters for grading.
 | Qwen2.5-14B | 14 | 28 GB |
 | Qwen2.5-32B | 32 | 64 GB |
 
-**Step 2 — Quantization multiplier:** 4-bit → × 0.25, 16-bit → × 1.0
+**Step 2 — Quantization multiplier = bits ÷ 16** (16-bit is the
+reference, full-precision case):
 
-**Step 3 — Context window addition:** 8K → + 1 GB, 256K → + 16 GB
+| Quantization | Multiplier |
+|---|---|
+| 4-bit | 0.25 |
+| 8-bit | 0.5 |
+| 12-bit | 0.75 |
+| 16-bit | 1.0 |
+
+**Step 3 — Context window addition (GB) = context in thousands of
+tokens ÷ 16** (a simplified stand-in for KV-cache growth):
+
+| Context | Addition |
+|---|---|
+| 8K | 0.5 GB |
+| 16K | 1.0 GB |
+| 32K | 2.0 GB |
+| 64K | 4.0 GB |
+| 128K | 8.0 GB |
+| 256K | 16.0 GB |
+
+Note: Steps 2 and 3 both divide by 16, but for unrelated reasons — 16
+is the reference bit-depth in Step 2, and a chosen scaling constant in
+Step 3. Don't read a deeper connection into that; it's a coincidence of
+these particular numbers.
 
 **Step 4 — Estimated VRAM (GB) = (Base VRAM × Quantization multiplier) + Context addition**
 
@@ -151,8 +191,8 @@ code:
 - [ ] Dragging the Model slider updates its label correctly at all 6
       positions.
 - [ ] Dragging the Quantization slider updates its label correctly at
-      both positions.
-- [ ] Dragging the Context slider updates its label correctly at both
+      all 4 positions.
+- [ ] Dragging the Context slider updates its label correctly at all 6
       positions.
 - [ ] Recommend produces the correct GPU string for at least 4
       different slider combinations, cross-checked against the
@@ -185,11 +225,10 @@ the appendix decision table for spot checks.
 | # | Criterion | What's checked | Points |
 |---|---|---|---|
 | 1 | Title | Present, legible, no overlap | 5 |
-| 2 | Three sliders present with correct ranges | Model (0-5), Quantization (0-1), Context (0-1) | 15 |
-| 3 | Live label updates | All three labels correctly reflect their slider's current position at every valid value | 20 |
+| 2 | Three sliders present with correct ranges | Model (0-5), Quantization (0-3, four levels), Context (0-5, six levels) | 15 |
+| 3 | Live label updates | All three labels correctly reflect their slider's current position at every valid value (6 + 4 + 6 = 16 positions total) | 20 |
 | 4 | VRAM formula correctness | Recommend produces the exact correct output for arbitrary slider combinations, matching the Decision Logic table | 25 |
 | 5 | Result display | Full text visible, correctly wrapped, no clipping at the screen edge | 10 |
 | 6 | Reset button | All three sliders, all three labels, and the result area correctly reset in one tap | 15 |
 | 7 | Code quality | Comments explain the formula and slider-label logic; standard program structure; `PROMPTS.md` present if AI was used | 10 |
 | | **Total** | | **100** |
-
