@@ -3,7 +3,7 @@
 **Week 2 · Student handout · Complete before your Week 3 lab**
 
 This handout takes you from an unopened Core S3 to a device running MicroPython, connected to
-your PC, streaming data over the USB serial port, and displaying text on its screen.
+the **UIFlow2 web editor**, streaming data over USB, and displaying text on its screen.
 
 Everything you flash and configure here is used for **every lab, lab test, and project** in this
 course. Once your device is working, **do not change the firmware version.** A device running
@@ -13,7 +13,8 @@ that is your problem to solve at 9:15 on a test morning.
 **Estimated time:** 60–90 minutes.
 
 **Prerequisite:** you must have completed the GitHub handout and the Claude Pro / VS Code
-handout first. Python 3.12+ must already be installed and working on your Laptop/PC.
+handout first. You'll still write and keep your `.py` files in VS Code and commit them to Git —
+what changes in this handout is *how you get code onto the device*, not where you write it.
 
 ---
 
@@ -45,13 +46,12 @@ system underneath it. There is no compiler and no linker — you copy a `.py` fi
 and it runs.
 
 The firmware used in this course is **M5Stack's UIFlow2 firmware**, which *is* MicroPython, with
-M5Stack's drivers for the screen, touch panel, IMU, and power management already built in. You
-get a standard MicroPython REPL and a standard filesystem; you simply also get working hardware
-drivers, which plain MicroPython on this board does not give you.
+M5Stack's drivers for the screen, touch panel, IMU, and power management already built in.
 
-> **We will not use the UIFlow2 block-based web editor at any point in this course.** We are
-> using the firmware only. All of your code will be Python that you write in VS Code and store
-> in your Git repository, exactly like the rest of the course.
+> **This course uses the UIFlow2 web editor** (`uiflow2.m5stack.com`) to get code onto the
+> device, connected over USB. You still write your `.py` files in VS Code and keep them in your
+> Git repository exactly like the rest of the course — the web editor is how you push that code
+> to the physical device and watch it run, not where you author it.
 
 ### ⚠️ The course standard firmware version
 
@@ -60,7 +60,7 @@ COURSE STANDARD FIRMWARE
 
 UIFlow2 v2.5.0 for CoreS3
 
-Start Mode: run main.py directly ("always")
+Boot Option: Show startup menu and network setup
 
 Flashed on (date): _______________________
 ```
@@ -68,21 +68,37 @@ Flashed on (date): _______________________
 **Do not accept M5Burner's offer to update the firmware later in the term.** If your device
 behaves differently from everyone else's, this is the first thing your instructor will check.
 
-### ⚠️ The Start Mode setting is not optional
+### ⚠️ The Boot Option setting is not optional
 
-UIFlow2 firmware can boot in one of three modes. Only one of them works for this course.
+UIFlow2 firmware can boot in one of three modes. Only one of them works for this course, and it's
+a different one than earlier course materials may have described — this handout supersedes
+anything that says otherwise.
 
-| Start Mode | What the device does at boot | Use it? |
+| Boot Option | What the device does at boot | Use it? |
 |---|---|---|
-| **Run main.py directly ("always")** | Black screen, runs your `main.py`, REPL available over USB | ✅ **This is the course setting** |
-| Show startup menu and network setup | Displays the UIFlow2 launcher with MAC address and a QR code | ❌ No |
+| **Show startup menu and network setup** | Displays the UIFlow2 launcher, which is what the web editor connects to over USB | ✅ **This is the course setting** |
+| Run main.py directly ("always") | Skips the launcher and runs `main.py` immediately | ❌ No — the web editor can't connect to a device in this mode |
 | Only network setup | Connects to Wi-Fi, no launcher screen | ❌ No |
 
-If you leave the device in the launcher mode, **the REPL will appear to connect but will ignore
-everything you type.** The launcher is a MicroPython application that runs at boot and listens on
-the USB connection for the UIFlow2 web editor. It owns the input stream, so your keystrokes go to
-the editor protocol instead of to Python. Part 3 sets this correctly during flashing; Part 4
-verifies it.
+The web editor needs the launcher running to talk to the device over USB. If you flash the device
+in "run main.py directly" mode, the web editor will not be able to connect at all. Part 3 sets
+this correctly during flashing; Part 4 verifies it.
+
+### ⚠️ Run Once vs. Run Always — this is the single most important thing in this handout
+
+The web editor has two ways to execute a program on the device, and they are **not
+interchangeable**:
+
+| | Run Once | Run Always |
+|---|---|---|
+| What it does | Runs your program without touching the device's saved files | **Overwrites `main.py`** on the device and sets it to run automatically on every boot |
+| If your program has a bug | The error is reported; reset the device and you're back at the startup screen, ready to try again | The device is now permanently configured to run the broken program on every boot, **including after a hard reset** |
+| Recovery if it goes wrong | Nothing to recover — nothing was changed | Try M5Burner's **Configure** option to reset the boot mode first; if that doesn't restore access, you have to **fully re-flash the firmware** |
+
+**Use Run Once for everything in this course, every time, with no exceptions.** There is no
+situation in a graded lab where you need a program to survive a power cycle unattended — your
+device stays connected to your laptop for the whole lab. Run Always exists, but this course does
+not use it. If you're ever unsure which button you're about to click, stop and check.
 
 ---
 
@@ -112,7 +128,24 @@ firmware the factory installed and display something on screen.
 
 If nothing appears, press and hold the **power button on the left side** for about two seconds.
 
-### Step 1.4 — Handle it properly
+### Step 1.4 — ⚠️ If your Core S3 is mounted on a DIN Base
+
+The Core S3 ships mounted on a DIN Base (the rail/wall-mount backplate with a DC power jack). If
+yours has one attached:
+
+> **The DIN Base's power switch must always be set to OFF while you are working over USB.**
+> That switch controls the base's separate 9–24V DC power input, not the Core S3 itself. If it's
+> left on — especially with nothing plugged into the DC jack — it can interfere with how the
+> device negotiates power between USB and the DC path, which shows up as the device rapidly
+> power-cycling, appearing to connect and then immediately disconnecting, or never being
+> detected at all. If you hit any of those symptoms, check this switch before anything else.
+
+If your device won't hold a stable USB connection and the switch is confirmed off, try removing
+the DIN Base entirely (it detaches with the supplied Allen key) and connecting the bare Core S3
+directly. If that resolves it, the base itself — not your cable, port, or computer — was the
+problem.
+
+### Step 1.5 — Handle it properly
 
 - Touch a metal surface before handling the device. Static discharge kills microcontrollers, and
   a dead one is not covered by anything.
@@ -167,8 +200,7 @@ M5Burner now launches, and it will launch normally every time from now on.
 ### Step 2.2 — You do not need an M5Stack account
 
 M5Burner will offer to let you register or log in. **Skip it.** The account exists for M5Stack's
-cloud features — binding a device for the web editor's Access Code workflow — and this course
-does not use any of them. Flashing over USB works perfectly well while logged out.
+cloud features, and flashing over USB works perfectly well while logged out.
 
 If you register anyway, no harm done; it just is not required.
 
@@ -181,7 +213,7 @@ panel.
 
 ## Part 3 — Flash the firmware (20 min)
 
-Read this entire part before you start. The **Start Mode** setting in Step 3.4 is the one that
+Read this entire part before you start. The **Boot Option** setting in Step 3.4 is the one that
 determines whether the rest of this handout works.
 
 ### Step 3.1 — Find the firmware
@@ -191,9 +223,13 @@ determines whether the rest of this handout works.
 3. Click **Download** and wait for it to finish. Downloading and burning are two separate
    actions.
 
+*(See Reference Image 1 at the end of this document for what this screen looks like.)*
+
 ### Step 3.2 — Connect the device
 
-Connect the Core S3 to your computer with the USB-C cable, directly, no hub.
+Connect the Core S3 to your computer with the USB-C cable, directly, no hub. If it's mounted on
+a DIN Base, confirm the DIN Base power switch is **off** (Part 1, Step 1.4) before you go
+further.
 
 M5Burner should report **"Found New Device."** If it does not, the cable is charge-only or the
 port is bad — go back to Step 1.2 before doing anything else.
@@ -212,213 +248,131 @@ download mode by hand:
 
 The screen stays blank in download mode. That is correct, not a fault.
 
-### Step 3.4 — Burn, and set the Start Mode
+### Step 3.4 — Burn, and set the Boot Option
 
 1. In M5Burner, click **Burn** on the CoreS3 firmware entry.
 2. Select the serial port for your device from the dropdown.
    - **Windows:** something like `COM5`.
-   - **macOS:** something like `/dev/cu.usbmodem101`.
+   - **macOS:** something like `/dev/cu.usbmodem1101`.
    - **Linux:** something like `/dev/ttyACM0`.
    - If several ports are listed, unplug the device, note which one disappears, plug it back in,
      and choose that one.
-3. ⚠️ **Set the Start Mode / boot behaviour to run `main.py` directly — the "always" option.**
-   This is the setting from Part 0, and it is the difference between a device you can work with
-   and one that ignores everything you type. Do not choose the option that shows the UIFlow2
-   startup menu.
-4. M5Burner asks for **Wi-Fi SSID and password**.
+
+*(See Reference Image 2 — the Burn dialog, showing the COM port and baud rate.)*
+
+3. ⚠️ **Set the Boot Option to "Show startup menu and network setup."** This is the setting
+   from Part 0, and it's the difference between a device the web editor can connect to and one
+   it can't. Do not choose "Run main.py directly."
+4. M5Burner asks for **Wi-Fi SSID and password**, and other configuration.
    - **Do not enter Seneca's network credentials.** The campus network uses enterprise
      authentication that this device cannot use, and you should not be typing your college
      password into a firmware tool regardless.
-   - Enter your home Wi-Fi, a phone hotspot, or leave it blank. In this Start Mode the device
-     does not connect to a network at all, and everything in lab 2 works over the USB cable.
-5. Click **Start** / **Next** and wait. Do not unplug the cable. Do not close the laptop lid.
-   This takes a minute or two.
+   - Enter your home Wi-Fi or a phone hotspot if you have one handy, or leave it blank — Wi-Fi
+     is not required for anything in this lab, which works entirely over USB.
+
+*(See Reference Image 3 — the Configure screen, showing the Boot Option field.)*
+
+5. Click **Start** and wait. Do not unplug the cable. Do not close the laptop lid. This takes a
+   minute or two.
+
+*(See Reference Images 4 and 5 — the burning progress screen, at the start and partway through.)*
+
 6. When it reports success, reset the device.
+
+*(See Reference Image 6 — the "Burn successfully" confirmation.)*
 
 ### Verification 2
 
-**The device reboots to a black screen.** No UIFlow2 logo, no MAC address, no QR code, nothing.
+**The device reboots to the UIFlow2 startup screen** — a menu showing your device's MAC address
+and a QR code, with tabs including DEVELOP, APP.RUN, APP.LIST, and SETTING along the bottom or
+side. That's exactly what success looks like in this mode.
 
-That is exactly what success looks like in this mode — the device is running an empty `main.py`
-and waiting for you. A black screen here is good news.
-
-> **If you see the UIFlow2 startup screen instead** — a menu with a Develop tab, your device's
-> MAC address, and a QR code — the Start Mode is wrong and the REPL in Part 6 will not accept
-> input. Fix it now rather than later:
+> **If you see a black screen instead**, the Boot Option is wrong and the web editor won't be
+> able to connect in Part 4. Fix it now rather than later:
 >
 > Keep the USB cable connected, restart the device, then in M5Burner click **Configure**, select
-> your port, load the current configuration, change the start mode to run `main.py` directly
-> ("always"), and write it back. Reset the device and confirm you get a black screen.
+> your port, load the current configuration, change the Boot Option to "Show startup menu and
+> network setup," and write it back. Reset the device and confirm you get the startup screen.
 
 ---
 
-## Part 4 — Confirm the serial port on your PC (5 min)
+## Part 4 — Connect to the UIFlow2 web editor (10 min)
 
-Your PC now needs to see the device as a serial port, so confirm it works now.
+### Step 4.1 — Browser requirements
 
-**Windows.** Open **Device Manager** (right-click Start → Device Manager). Expand **Ports (COM &
-LPT)**. You should see a USB Serial Device with a COM number. Note the number.
+The web editor connects to your device using the **Web Serial API**, a browser feature that
+isn't universally supported:
 
-**macOS.** Open Terminal:
+- **Chrome and Edge** support it and always have.
+- **Firefox** added support starting with **Firefox 151** — if you're on an older Firefox, either
+  update it or use Chrome/Edge instead.
+- **Safari** does not support it. Don't use Safari for this course's device work.
 
-```bash
-ls /dev/cu.usbmodem*
-```
+### Step 4.2 — Open the web editor and connect
 
-Note the name — on the Core S3 it is typically `/dev/cu.usbmodem101`. **Use the `cu.` name, not
-the `tty.` name** — the `tty.` device blocks waiting for a carrier signal that never arrives and
-appears to hang.
+1. Go to <a href="https://uiflow2.m5stack.com" target="_blank" rel="noopener">https://uiflow2.m5stack.com</a>
+   in a supported browser.
+2. Connect the Core S3 via USB-C, directly, no hub. Confirm it's showing the UIFlow2 startup
+   screen from Verification 2, not a black screen.
+3. Click **Select Your Controller** (or the Controller button if you've been here before).
+4. Your browser will prompt you to choose a serial port — a native OS dialog, not a web editor
+   list. Choose the port associated with the Core S3 (usually easiest to identify by unplugging
+   it once and seeing which entry disappears).
+5. Select **CoreS3** from the device list and click **Confirm**.
 
-**Linux.** Open a terminal:
-
-```bash
-ls /dev/ttyACM*
-```
-
-If you get a permission error later, add yourself to the `dialout` group:
-
-```bash
-sudo usermod -a -G dialout $USER
-```
-
-Then log out and back in.
+You should land in the UiFlow2 programming interface with your device connected.
 
 ### Verification 3
 
-You can name your device's port. Write it in `lab2/SETUP.md` — you will type it repeatedly.
+The web editor shows your device as connected, and you can see the code editing view (use the
+**Code Preview** toggle in the menu bar if it opens in the graphical/Blockly view instead — this
+course works entirely in Python code, not blocks).
 
 ---
 
-## Part 5 — Install `mpremote` on your PC (10 min)
+## Part 5 — Your first Run Once, and the WebTerminal (15 min)
 
-`mpremote` is the official MicroPython command-line tool. It gives you a REPL, copies files to
-and from the device, and runs scripts. It is how you will work with the device all term.
+### Step 5.1 — Find the WebTerminal
 
-### Step 5.1 — Install
+The WebTerminal is the web editor's live console — this is where you'll watch `print()` output
+from your programs, the closest equivalent to a REPL in this workflow. Find the **WebTerminal**
+button in the web editor's interface and click it.
 
-```
-pip install mpremote
-```
+Select your device's serial port again if prompted, and wait for the console to display
+**"Connected to Serial Port!"** — that confirms the live connection is working.
 
-If `pip` is not recognised, try `pip3` or `python -m pip install mpremote`. On Linux you may need
-`pip install --user mpremote`.
+### Step 5.2 — Write a one-line test
 
-### Step 5.2 — Verify it sees the device
-
-With the Core S3 plugged in and running normally (not in download mode):
-
-```
-mpremote devs
-```
-
-Your device's port should be listed. If the command is not recognised, close and reopen your
-terminal so it picks up the new PATH.
-
----
-
-## Part 6 — Your first REPL session (10 min)
-
-The REPL is an interactive Python prompt running **on the device**. Anything you type executes on
-the microcontroller.
-
-### Step 6.1 — Connect
-
-```
-mpremote repl
-```
-
-You should get a `>>>` prompt, and typing should echo. Try `2 + 2` and press Enter.
-
-If nothing appears at all, press `Ctrl+C` once — the device may be running a program, and
-`Ctrl+C` interrupts it and drops you to the prompt.
-
-> ### ⚠️ The prompt appears but typing does nothing
->
-> This is the classic symptom of the wrong Start Mode. You see a MicroPython banner and a `>>>`
-> prompt, but the keyboard does nothing at all — no echo, no response, no error.
->
-> **What is happening:** the banner is real but stale. MicroPython buffers the messages printed
-> while the device was booting and sends them the moment your computer connects, so you are
-> reading a recording rather than talking to a live prompt. The interpreter is busy running the
-> UIFlow2 launcher, which listens on the USB connection for the web editor and swallows
-> everything you type.
->
-> **Confirm it:**
->
-> ```
-> mpremote connect /dev/cu.usbmodem101 exec "print(1)"
-> ```
->
-> If this reboots the device or hangs instead of printing `1`, the launcher has the port.
->
-> **Fix it:** the device is in the wrong Start Mode. Check the screen — if you see a UIFlow2 menu
-> with a Develop tab, a MAC address, and a QR code rather than a black screen, go back to
-> Verification 2 in Part 3 and use M5Burner's **Configure** option to set `main.py` to run
-> directly ("always"). After the change the device boots black and the REPL responds normally.
-
-### Step 6.2 — Prove you are talking to the device
-
-Type these one at a time:
+In VS Code, inside your `PRG455.263` repository, create `lab2/hello_test.py`:
 
 ```python
->>> 2 + 2
+# PRG455 lab 2 - first Run Once test
+print("Hello from the Core S3")
 ```
 
-```python
->>> import sys
->>> sys.implementation
-```
+Copy its contents into the web editor's code view.
 
-This prints the MicroPython version running on your device. **Copy the exact output — you will
-paste it into `lab2/SETUP.md`.**
+### Step 5.3 — Run Once
 
-```python
->>> import os
->>> os.listdir()
-```
+Click **Run Once**. Watch the WebTerminal — you should see `Hello from the Core S3` appear.
 
-This lists the files in the device's filesystem. You will see `main.py` and possibly others.
-
-```python
->>> help('modules')
-```
-
-This lists every module available in this firmware. Look for `M5` in the list — that is
-M5Stack's hardware library.
-
-### Step 6.3 — Prove it is really the hardware
-
-```python
->>> import time
->>> time.ticks_ms()
-```
-
-Run it twice. The number increases — that is milliseconds since the device booted, counted by
-the microcontroller.
-
-### Step 6.4 — Exit
-
-Press `Ctrl+]` to leave the REPL and return to your PC's terminal.
-
-> **Keep this in mind all term:** only one program can hold the serial port at a time. If
-> `mpremote` says the port is busy, you have another REPL, a Thonny window,
-> still holding it. This becomes the single most common cause of "my program can't
-> find the device."
+**Do not click Run Always.** If you click it by accident, see the Part 0 policy box and the
+Troubleshooting table for what to do next.
 
 ### Verification 4
 
-You reached `>>>`, ran commands, saw a version string, and exited cleanly.
+You ran a program with Run Once and saw its output appear live in the WebTerminal.
 
 ---
 
-## Part 7 — Basic test A: streaming data over serial (10 min)
+## Part 6 — Basic test A: streaming data (10 min)
 
 This is the test that matters most for this course. Everything from Week 7 onward depends on the
 device printing lines that your PC program reads.
 
-### Step 7.1 — Create the file
+### Step 6.1 — Create the file
 
-In VS Code, inside your `PRG455.263` repository, create `lab2/heartbeat.py`:
+In VS Code, create `lab2/heartbeat.py`:
 
 ```python
 # PRG455 Lab 2 - serial heartbeat
@@ -438,20 +392,17 @@ while True:
 Read it before you run it. Three things to notice:
 
 - `print()` on a microcontroller does not go to a screen. It goes **out of the USB cable** to
-  whatever is listening. That is how your application will receive data.
+  whatever is listening — in this lab, the WebTerminal; later in the course, your own PC
+  application.
 - The output format is deliberate: a tag, then comma-separated fields. In Week 8 you will design
   a protocol; this is the simplest possible version of one.
 - `while True:` runs forever. On a PC that would be a bug. On a microcontroller with no operating
   system, it is normal — there is nothing else for the processor to do.
 
-### Step 7.2 — Run it on the device without installing it
+### Step 6.2 — Run it with Run Once
 
-```
-mpremote run lab2/heartbeat.py
-```
-
-This uploads and runs the file temporarily without saving it to the device. You should see a new
-line appear once per second:
+Copy `heartbeat.py` into the web editor's code view and click **Run Once**. Watch the
+WebTerminal — you should see a new line appear once per second:
 
 ```
 HB,1,4213
@@ -462,21 +413,21 @@ HB,3,6217
 Watch it for ten seconds. Confirm the counter increments and the millisecond value rises by
 roughly 1000 each time.
 
-Press `Ctrl+C` to stop it.
+Reset the device (or use the web editor's stop control, if available) to end the program.
 
 ### Verification 5
 
-Lines appear once per second and the numbers increase. **Copy five lines of the output into
-`lab2/SETUP.md`.** This is your proof that the PC-to-device serial link works, which is the
-foundation of the entire second half of this course.
+Lines appear once per second and the numbers increase. **Copy five lines of the WebTerminal
+output into `lab2/SETUP.md`.** This is your proof that the PC-to-device serial link works, which
+is the foundation of the entire second half of this course.
 
 ---
 
-## Part 8 — Basic test B: the display (10 min)
+## Part 7 — Basic test B: the display (10 min)
 
 Now confirm the screen and the M5 hardware library.
 
-### Step 8.1 — Create the file
+### Step 7.1 — Create the file
 
 Create `lab2/display_test.py`:
 
@@ -510,31 +461,28 @@ while True:
 **Replace `YOUR NAME HERE` with your actual name.** Your instructor checks the screen at
 sign-off.
 
-### Step 8.2 — Run it
+### Step 7.2 — Run it with Run Once
 
-```
-mpremote run lab2/display_test.py
-```
-
-The screen should show the course code, your name, and a counter that increments once per
-second. `Ctrl+C` to stop.
+Copy this into the web editor and click **Run Once**. The screen should show the course code,
+your name, and a counter that increments once per second, and the WebTerminal should show the
+matching `DISP,n` lines.
 
 > **If a line raises `AttributeError` or `ImportError`,** the API names in your firmware version
-> differ slightly from this listing. Do not guess and do not spend twenty minutes on it. Open a
-> REPL and investigate:
+> differ slightly from this listing. Do not guess and do not spend twenty minutes on it. In the
+> WebTerminal, run a small Run Once test with:
 >
 > ```python
-> >>> import M5
-> >>> dir(M5)
-> >>> from M5 import Widgets
-> >>> dir(Widgets)
+> import M5
+> print(dir(M5))
+> from M5 import Widgets
+> print(dir(Widgets))
 > ```
 >
-> Then ask Claude, giving it the exact error text **and** the output of `dir()`. Record the
+> Then ask Claude, giving it the exact error text **and** the printed `dir()` output. Record the
 > problem and the fix in `PROMPTS.md` — this is precisely the kind of verification work this
 > course grades.
 
-### Step 8.3 — Notice something
+### Step 7.3 — Notice something
 
 `M5.update()` is called every time through the loop. It is how the library polls the touch
 screen, buttons, and power chip. If you stop calling it, the hardware stops responding — while
@@ -550,7 +498,7 @@ photograph goes in your repository.
 
 ---
 
-## Part 9 — Basic test C: reading a sensor (10 min, stretch)
+## Part 8 — Basic test C: reading a sensor (10 min, stretch)
 
 Optional in Week 1, but attempt it — it is your first real sensor read.
 
@@ -571,76 +519,63 @@ while True:
     time.sleep(0.2)
 ```
 
-Run it with `mpremote run lab2/imu_test.py` and **tilt the device while it runs.** The numbers
-change. One axis reads close to 1.0 when that axis points down — that is gravity, and it is the
-simplest calibration check there is.
+Run it with **Run Once** and **tilt the device while it runs**, watching the numbers change in
+the WebTerminal. One axis reads close to 1.0 when that axis points down — that is gravity, and
+it is the simplest calibration check there is.
 
-If `M5.Imu` does not exist in your firmware, use `dir(M5)` in the REPL to find the correct name
-and record what you found.
-
----
-
-## Part 10 — Installing a program permanently (10 min)
-
-So far you have run programs temporarily. To make one run automatically at power-on, it must be
-saved on the device as `main.py`.
-
-### Step 10.1 — Look at what is already there
-
-```
-mpremote fs ls
-```
-
-### Step 10.2 — Back up the existing main.py
-
-```
-mpremote fs cp :main.py lab2/main_original.py
-```
-
-This copies the file **from** the device (`:main.py`) **to** your PC. Commit it — if you ever
-need to get back to the factory behaviour, you will want it.
-
-### Step 10.3 — Install your own
-
-```
-mpremote fs cp lab2/heartbeat.py :main.py
-```
-
-Unplug the device and plug it back in. It now runs your heartbeat program automatically.
-
-### Step 10.4 — ⚠️ Getting control back
-
-A program running in an infinite loop keeps running. To interrupt it:
-
-```
-mpremote repl
-```
-
-then press `Ctrl+C`. You are back at `>>>` and the loop has stopped.
-
-**Learn this now, while it does not matter.** A device running a tight loop that you cannot
-interrupt is genuinely frustrating during a lab test. If `Ctrl+C` does not work, hold the power
-button to force the device off, then hold `Ctrl+C` in `mpremote repl` while it boots.
-
-If everything else fails, re-flash the firmware with M5Burner. Nothing you can do in Python
-permanently damages the device.
+If `M5.Imu` does not exist in your firmware, use the `dir(M5)` technique from Step 7.2 to find
+the correct name and record what you found.
 
 ---
 
-## Part 11 — Commit your work
+## Part 9 — Why this course doesn't use Run Always
+
+You now have three working programs. It might be tempting to make one of them start
+automatically every time the device powers on — that's exactly what **Run Always** does. This
+course deliberately doesn't use it, and it's worth understanding why before you're tempted to
+click it during a lab test.
+
+**Run Always overwrites `main.py` on the device and sets it to run on every boot, permanently,
+until something changes that file.** If the program you Run Always has a bug, the device is now
+stuck: a hard reset just re-runs the same broken program and fails the same way, every time,
+because the device isn't choosing what to run anymore — it's just running `main.py`.
+
+Compare that to **Run Once**, which is everything else in this handout: it never touches
+`main.py`, so a bug in a Run Once program just ends that one run. Reset the device and you're
+back at the startup screen, free to try again with corrected code.
+
+For a lab where your device stays connected to your laptop the whole time and gets graded live,
+there's no actual benefit to Run Always — persistent auto-boot only matters if you need a
+program to keep running after you've disconnected, which doesn't describe any lab in this
+course.
+
+**If you ever do click Run Always by mistake** and the device starts misbehaving:
+
+1. Reset the device and see if it recovers on its own — some errors are caught and reported
+   without crash-looping.
+2. In M5Burner, try **Configure** (not Burn) on your port, to reset the Boot Option without a
+   full firmware rewrite. This is worth trying first, though it isn't guaranteed to fix a device
+   that's stuck on a broken `main.py`.
+3. If that doesn't work, re-flash the firmware from scratch following Part 3. Nothing you can do
+   in Python permanently damages the device — the fix is always available, it's just a bigger
+   step than you wanted to take.
+
+---
+
+## Part 10 — Commit your work
 
 Everything you created belongs in `lab2/` in your `PRG455.263` repository:
 
 ```
 lab2/
 ├── README.md
-├── SETUP.md              ← version outputs, port name, sample serial output
+├── SETUP.md              ← version outputs, port name, sample WebTerminal output
+├── hello_test.py
 ├── heartbeat.py
 ├── display_test.py
 ├── imu_test.py           ← if attempted
-├── main_original.py      ← the factory main.py you backed up
 ├── screen.jpg            ← photo of your name on the device screen
-└── PROMPTS.md            ← any Claude interaction during this lab
+└── PROMPTS.md             ← any Claude interaction during this lab
 ```
 
 Add this section to `lab2/SETUP.md`:
@@ -649,15 +584,13 @@ Add this section to `lab2/SETUP.md`:
 ## Core S3 setup
 
 **Firmware version flashed:** (UIFlow2 v2.5.0)
-**Start Mode set to:** (run main.py directly / "always")
+**Boot Option set to:** (Show startup menu and network setup)
 **Date flashed:**
 **Serial port on my machine:**
 **Operating system:**
+**Browser used for the web editor:**
 
-### Output of sys.implementation in the REPL
-[paste]
-
-### Five lines of heartbeat.py output
+### Five lines of heartbeat.py output (from the WebTerminal)
 [paste]
 
 ### Problems I hit and how I solved them
@@ -681,20 +614,16 @@ Confirm the files are visible on github.com before you leave the lab.
 |---|---|
 | macOS will not open M5Burner; right-clicking only offers "Move to Trash" | Gatekeeper has blocked it. Try to open it once, click **Done**, then System Settings → Privacy & Security → scroll to Security → **Open Anyway**. Full steps in Part 2, Step 2.1. |
 | M5Burner never says "Found New Device" | Charge-only cable, in nine cases out of ten. Try a different cable, then a different USB port, and remove any hub. |
-| No COM port / no `/dev/cu.usbmodem*` at all | Same cause. Cable first, always. |
-| Burn fails partway through | Another program is holding the port — close every terminal, Thonny window, and VS Code serial monitor. Then re-enter download mode and retry. Lower the baud rate in M5Burner if it fails again. |
+| Device rapidly connects and disconnects, or powers on and off in a loop | If it's on a DIN Base, its power switch is very likely on. Set it to off (Part 1, Step 1.4). If the symptom continues with the switch off, detach the DIN Base entirely and test the bare Core S3. |
+| No COM port / no `/dev/cu.usbmodem*` at all | Charge-only cable, first. If the device is on a DIN Base and power-cycling, see the row above. |
+| Burn fails partway through | Another program is holding the port — close every browser tab with the web editor open, and any terminal or serial monitor. Then re-enter download mode and retry. Lower the baud rate in M5Burner if it fails again. |
 | Screen stays blank during flashing | **Correct.** Download mode blanks the screen. |
-| Screen is black after a successful flash | **Correct.** In the course Start Mode the device boots black and runs `main.py`. A black screen is what success looks like. |
-| Device shows a UIFlow2 menu with a MAC address and QR code | Wrong Start Mode. M5Burner → **Configure** → set `main.py` to run directly ("always"). Until you do, the REPL will ignore your keyboard. |
-| **REPL prompt appears but typing does nothing** | The UIFlow2 launcher owns the USB connection and is swallowing your input. The banner you can see was buffered during boot. Fix the Start Mode — Part 6, Step 6.1. |
-| `mpremote ... exec` reboots the device instead of running | Same cause. Wrong Start Mode. |
-| Burn fails immediately, or "Get mac failed" | Auto-reset into download mode did not work. Long-press G0 until the indicator goes red → green, then retry. Remove any USB hub first. |
-| `mpremote: no device found` | Device is in download mode, not running mode — unplug and replug. Or another program holds the port. |
-| Port is busy / access denied / permission error | Something else has the port open. On Linux, add yourself to `dialout` and log out and back in. |
-| REPL connects but shows nothing | Press `Ctrl+C` once. A program is running. |
-| Garbled characters in the REPL | Wrong port selected, or you used the `tty.` device on macOS instead of `cu.`. |
-| `AttributeError` on an `M5.` call | Firmware API differs from the listing. Use `dir(M5)` in the REPL, then ask Claude with the error text and the `dir()` output. Record it in `PROMPTS.md`. |
-| Device reboots repeatedly | Usually a program crashing in a loop at startup. `mpremote repl`, `Ctrl+C` during boot, then `mpremote fs cp lab2/main_original.py :main.py` to restore. |
+| Device boots to a black screen after flashing | Wrong Boot Option. M5Burner → **Configure** → set Boot Option to "Show startup menu and network setup." The web editor cannot connect to a device in "run main.py directly" mode. |
+| Web editor can't find/connect to the device | Confirm you're on Chrome, Edge, or Firefox 151+ — Safari isn't supported. Confirm the device shows the UIFlow2 startup screen, not a black screen (see row above). |
+| WebTerminal never shows "Connected to Serial Port!" | Another tab or program has the port open — close other web editor tabs, terminals, or serial monitors, then retry. |
+| I clicked Run Always by accident | See Part 9. Try a reset first, then M5Burner's Configure option, then a full re-flash if neither works. |
+| Device reboots repeatedly after I used Run Always | The device is stuck re-running a broken `main.py`. Re-flash the firmware following Part 3 — this is the reliable fix. |
+| `AttributeError` on an `M5.` call | Firmware API differs from the listing. Use `dir(M5)` via a Run Once test (Step 7.2), then ask Claude with the error text and the `dir()` output. Record it in `PROMPTS.md`. |
 | Device gets warm | Normal during flashing and Wi-Fi use. Hot enough to be uncomfortable to hold is not — disconnect and report it. |
 | Everything worked, then stopped after I updated the firmware | You changed the pinned version. Re-flash the course standard version from Part 0. |
 
@@ -711,15 +640,48 @@ Bring your Core S3 and your laptop to the lab.
 | # | Check | Initials |
 |---|---|---|
 | 1 | Device runs UIFlow2 v2.5.0, recorded in `SETUP.md` | |
-| 2 | Device boots to a **black screen** — no UIFlow2 menu, MAC, or QR code | |
-| 3 | Student can name their serial port and find it on their own machine | |
-| 4 | `mpremote repl` reaches `>>>` **and accepts typed input**; `sys.implementation` prints a version | |
-| 5 | `heartbeat.py` streams CSV lines once per second, live | |
+| 2 | Boot Option is "Show startup menu and network setup" — device boots to the **UIFlow2 startup screen**, not a black screen | |
+| 3 | If mounted on a DIN Base, its power switch is confirmed **off** | |
+| 4 | Student can connect the web editor and get "Connected to Serial Port!" in the WebTerminal | |
+| 5 | `heartbeat.py` streams CSV lines once per second, live, in the WebTerminal | |
 | 6 | Device screen shows `PRG455.263` and the student's name | |
-| 7 | Student demonstrates interrupting a running program with `Ctrl+C` | |
-| 8 | Factory `main.py` backed up to the repository | |
-| 9 | `lab2/` committed and pushed, visible on github.com | |
+| 7 | Student can explain the difference between Run Once and Run Always, and why this course only uses Run Once | |
+| 8 | `lab2/` committed and pushed, visible on github.com | |
 
 Checks 5 and 7 are the ones that matter. Streaming data over the cable is what the whole second
-half of this course is built on, and being able to stop a runaway program is what stops a bad
-lab test from becoming a failed one.
+half of this course is built on, and understanding Run Once vs. Run Always is what stops a bad
+lab test from becoming an unrecoverable one.
+
+---
+
+## Reference Images
+
+Screenshots of the M5Burner flashing workflow referenced in Part 3, for when the steps above
+aren't enough on their own. Your version of M5Burner may look slightly different depending on
+its release, but the flow is the same.
+
+**Image 1 — M5Burner's CoreS3 firmware list**, showing UIFlow2.0 v2.5.0 selected for download.
+
+<img src="install1.png" width="337" height="217" alt="M5Burner CoreS3 firmware list">
+
+**Image 2 — The Burn dialog**, showing COM port selection and baud rate.
+
+<img src="install2.png" width="337" height="217" alt="M5Burner Burn dialog with COM port">
+
+**Image 3 — The Configure dialog**, showing Wi-Fi fields, SNTP servers, timezone, and — the
+field that matters most for this course — **Boot Option**, which must be set to "Show startup
+menu and network setup."
+
+<img src="install3.png" width="337" height="217" alt="M5Burner Configure dialog showing Boot Option">
+
+**Image 4 — Burning in progress**, just started.
+
+<img src="install4.png" width="337" height="217" alt="M5Burner burning progress, just started">
+
+**Image 5 — Burning in progress**, partway through, showing the write percentage.
+
+<img src="install5.png" width="337" height="217" alt="M5Burner burning progress, partway through">
+
+**Image 6 — Burn complete**, showing the success confirmation.
+
+<img src="install6.png" width="337" height="217" alt="M5Burner burn successful confirmation">
