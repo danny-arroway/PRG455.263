@@ -23,8 +23,7 @@ Reading Week is treated as a non-teaching pause (not one of the 13 course weeks)
 ## Schedule Notes
 
 - **Week 1:** Sept 7 lab falls on Labour Day. Lab 1 (GitHub repos, Claude Pro connection, first AI-assisted commit) is assigned as homework, due before the Sept 14 lab, with a brief walkthrough during the Sept 10 lecture.
-- **Week 6:** Oct 12 lab falls on Thanksgiving. Lab Test 1 has been moved to the Thursday, Oct 15 lecture slot, replacing that week's cumulative review lecture (omitted).
-- **Lab weighting:** Because Labs 1 and 2 carry reduced weight (1% and 2%), the 6% freed up has been redistributed evenly across the remaining six labs (Labs 3–8), raising each from 4.5% to 5.5%.
+- **Week 6:** Oct 12 lab falls on Thanksgiving. Lab Test 1 has been moved to the Thursday, Oct 15 lecture slot.
 
 ## Weekly Schedule
 
