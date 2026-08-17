@@ -166,6 +166,29 @@ render as a box rather than the character you intended.
 
 ### Code Requirements
 
+- **Required header block.** Every submitted `.py` file must begin with
+  the following header, as comments, with all fields filled in — no
+  placeholders left in the submitted version:
+
+  ```python
+  # File:                 prg455.263.lab3.py
+  # Author:               first, lastname
+  # Date Submitted:       mm/dd/yyyy
+  # Purpose:              solution to lab3
+  # Student Number:       Seneca Polytechnic student number
+  # Seneca E-mail:        Seneca student e-mail address
+  # Seneca username:      Seneca My.Seneca username
+  # Course Code/Section:  PRG455X
+  # GitHub URL:           Student GitHub web address
+  # Core S3 Device MAC:   (eg. 1CFED5BD87D2)
+  ```
+
+  Align the second field five tabs from the first, exactly as shown
+  above. This header is required on every lab, lab test, and project
+  submission for the rest of the course, not just Lab 3 — update the
+  `File:` and `Purpose:` lines to match each new submission
+  (`prg455.263.labX.py`, `prg455.263.testY.py`, `prg455.263.projectZ.py`,
+  and `solution to labX` / `testY` / `projectZ` respectively).
 - Standard `setup()` / `loop()` structure, `M5.begin()` → `m5ui.init()`
   → build widgets → `page0.screen_load()`, with the try/except
   error-reporting wrapper used throughout this course.
@@ -187,6 +210,9 @@ render as a box rather than the character you intended.
 Run through this on your **physical CoreS3**, not just by reading the
 code:
 
+- [ ] Required header block is present at the top of the file, every
+      field filled in (no placeholders), formatted as specified in
+      Code Requirements.
 - [ ] Title is visible and doesn't overlap other widgets.
 - [ ] Dragging the Model slider updates its label correctly at all 6
       positions.
@@ -231,4 +257,6 @@ the appendix decision table for spot checks.
 | 5 | Result display | Full text visible, correctly wrapped, no clipping at the screen edge | 10 |
 | 6 | Reset button | All three sliders, all three labels, and the result area correctly reset in one tap | 15 |
 | 7 | Code quality | Comments explain the formula and slider-label logic; standard program structure; `PROMPTS.md` present if AI was used | 10 |
+| | **Subtotal** | | **100** |
+| — | **Required header block** | Deduction, not a scored criterion: **-10 points (10%) from the total above** if the required header block (see Code Requirements) is missing, incomplete, or has any placeholder text left in it | -10 |
 | | **Total** | | **100** |
