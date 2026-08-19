@@ -77,13 +77,18 @@ with `M5.Lcd.show()` into a fixed rectangle that:
 **FR3 — Capture button.** On press, it must:
 1. Capture a fresh frame with `camera.snapshot()` — not a frame left
    over from a previous loop iteration.
-2. Encode it to JPEG with `jpg.encode(frame, quality=N)` at a quality
-   of your choosing (80 is a reasonable default; document your choice
-   in a comment). This is a function from the separate `jpg` module —
-   there is no `.to_jpeg()` method on the frame object itself, and
-   using that name will raise `AttributeError` on the physical device.
+2. Encode it to JPEG with `jpg.encode(frame, N)` at a quality of your
+   choosing, passed **positionally** (80 is a reasonable default;
+   document your choice in a comment). This is a function from the
+   separate `jpg` module — there is no `.to_jpeg()` method on the
+   frame object itself, and using that name will raise
+   `AttributeError` on the physical device. Passing quality as a
+   keyword argument (`quality=80`) will raise `TypeError: function
+   doesn't take keyword arguments` on this firmware, even though it
+   appears as a keyword argument in M5Stack's published documentation.
 3. Call `.bytearray()` on the `image.Image` that `jpg.encode()`
-   returns, and write those bytes to a file on `/flash`.
+   returns, and write those bytes **in binary mode (`"wb"`)** to a
+   file on `/flash`.
 4. Call `set_image()` on your `M5Image` widget with that file's path,
    so the captured photo becomes visible immediately.
 5. Update the status label to indicate a photo has been captured
