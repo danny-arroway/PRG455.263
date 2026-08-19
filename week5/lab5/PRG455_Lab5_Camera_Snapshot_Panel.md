@@ -136,6 +136,15 @@ conditions hold.
   which uses `M5.Lcd.show()` as covered in lecture — this is the one
   approved exception to "M5UI widgets only" in this course, because no
   M5UI widget supports live video.
+- **Write captured JPEG bytes in binary mode (`"wb"`)**, not text mode
+  — `jpg.encode().bytearray()` returns binary data, and text mode is a
+  type mismatch that can fail on real hardware.
+- **Wrap the Capture button's handler body in its own `try`/`except`**
+  and print any exception. An error inside an event handler does not
+  reliably reach the `try`/`except` around `setup()`/`loop()`, so
+  without this, a broken Capture button fails silently — nothing
+  crashes, nothing prints, and the photo simply never appears on
+  flash. See Lecture 5 §4 for why this matters here specifically.
 - Comment your code — explain why the live preview and the `M5Image`
   widget use different display calls, and why the button handlers are
   structured the way they are.
