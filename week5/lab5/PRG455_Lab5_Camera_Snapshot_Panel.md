@@ -9,32 +9,6 @@ starting this lab.
 
 ---
 
-### Required Header Block
-
-Every submitted `.py` file must begin with this header, as a comment
-block, with every field completed — no placeholder text:
-
-```python
-# File:
-# Author:
-# Date Submitted:
-# Purpose:
-# Student Number:
-# Seneca E-mail:
-# Seneca username:
-# Course Code/Section:
-# GitHub URL:
-# Core S3 Device MAC address:
-```
-
-Align the value after each field's colon **five tabs** from the label,
-matching the header format used in Lab 4. A missing header, or a
-header containing placeholder text (e.g. "TODO", "your name here"),
-results in a flat **−10 point deduction** applied on top of your score
-from the rubric below — it is not one of the scored criteria itself.
-
----
-
 ### Scenario
 
 A small electronics hobby shop wants a quick "inspection panel" they
@@ -134,6 +108,27 @@ conditions hold.
 
 ### Code Requirements
 
+- **Required header block.** Every submitted `.py` file must begin
+  with the following header, as comments, with all fields filled in —
+  no placeholders left in the submitted version:
+
+  ```python
+  # File:                 prg455.263.lab5.py
+  # Author:               first, lastname
+  # Date Submitted:       mm/dd/yyyy
+  # Purpose:              solution to lab5
+  # Student Number:       Seneca Polytechnic student number
+  # Seneca E-mail:        Seneca student e-mail address
+  # Seneca username:      Seneca My.Seneca username
+  # Course Code/Section:  PRG455X
+  # GitHub URL:           Student GitHub web address
+  # Core S3 Device MAC:   (eg. 1CFED5BD87D2)
+  ```
+
+  Align the second field five tabs from the first, exactly as shown
+  above. This is the same header required on every lab, lab test, and
+  project submission this term — only the `File:` and `Purpose:` lines
+  change (`prg455.263.lab5.py` / `solution to lab5`).
 - Standard `setup()` / `loop()` structure, `M5.begin()` → `m5ui.init()`
   → build widgets → `page0.screen_load()`, with the try/except
   error-reporting wrapper used throughout this course.
@@ -170,6 +165,9 @@ conditions hold.
 Run through this on your **physical CoreS3**, not just by reading the
 code:
 
+- [ ] Required header block is present at the top of the file, every
+      field filled in (no placeholders), formatted as specified in
+      Code Requirements.
 - [ ] Title is visible and doesn't overlap any other element at any
       point during operation.
 - [ ] Live preview updates continuously and fills at least 280×150px.
@@ -205,9 +203,7 @@ code:
 ### Marking Rubric — Out of 100
 
 Graded by running the submitted program on a physical CoreS3 and
-working through the checklist above. The mandatory header block is
-checked separately — see above — and is **not** one of the criteria
-below.
+working through the checklist above.
 
 | # | Criterion | What's checked | Points |
 |---|---|---|---|
@@ -218,4 +214,6 @@ below.
 | 5 | Clear button | Reverts `M5Image` to placeholder and resets status label in one tap, without restarting the program | 15 |
 | 6 | Status label accuracy | Correctly reflects captured/not-captured state at all times, including after Clear | 10 |
 | 7 | Code quality | Comments explain the two display paths and button logic; standard program structure; `PROMPTS.md` present if AI was used | 10 |
+| | **Subtotal** | | **100** |
+| — | **Required header block** | Deduction, not a scored criterion: **-10 points (10%) from the total above** if the required header block (see Code Requirements) is missing, incomplete, or has any placeholder text left in it | -10 |
 | | **Total** | | **100** |
