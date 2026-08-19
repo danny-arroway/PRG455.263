@@ -74,13 +74,35 @@ the other two are the same pattern with a different list.
    (File, Author, Date Submitted, Purpose, Student Number, Seneca
    E-mail, Seneca username, Course Code/Section, GitHub URL, Core S3
    Device MAC) — written as regular Markdown text in the file, not as
-   Python comments, since `about_me.md` is not a `.py` file. Populate
-   every field with your real information; the `Core S3 Device MAC`
-   field specifically must be obtained **programmatically from the
-   device itself** — see FR6 — not typed in as a literal string.
+   Python comments, since `about_me.md` is not a `.py` file.
+
+   **Nine of these ten fields are static, personal information you
+   already know before you ever run your program** — the same way you
+   fill in the `.py` header's `Author:`, `Date Submitted:`, etc. by
+   hand before submitting a lab. Type your real values for File,
+   Author, Date Submitted, Purpose, Student Number, Seneca E-mail,
+   Seneca username, Course Code/Section, and GitHub URL directly into
+   your source code — e.g. as literal strings you build the file's
+   content from — **before** you run the program on your CoreS3.
+   There is no requirement to collect any of these nine fields through
+   a widget, a prompt, or any other on-device input; hard-coding them
+   is correct and expected, exactly like the `.py` header itself.
+
+   **The tenth field, `Core S3 Device MAC`, is the one exception.** It
+   must be obtained **programmatically, at runtime, from the device
+   itself** — see FR6 — never typed in as a literal string, even
+   though it looks like ordinary text sitting next to the other nine.
+   If your header block reads correctly but the MAC address is a
+   value you copy-pasted or typed in by hand, this field does not meet
+   FR5 or FR6, regardless of whether the number happens to be your
+   device's real MAC.
 2. **The three slider selections** — program, expected grade, and
    Claude model used — clearly labelled, in words (e.g. "Program:
-   ECT"), not as raw slider positions.
+   ECT"), not as raw slider positions. Unlike the nine static header
+   fields above, these three **must** come from reading each slider's
+   current value at the moment Create Profile is pressed — they are
+   the one part of the header-and-selections content that is supposed
+   to change based on what happens on the device during the test.
 3. **A reference to the photo** taken in Part A. You do not need to
    re-capture a photo in Part B — reference the `photo.jpg` already
    saved to `/flash` in Part A (e.g. a Markdown image link
@@ -91,6 +113,7 @@ the other two are the same pattern with a different list.
 The file must be **plain Markdown text**, openable and readable in any
 text editor or Markdown viewer — not JSON, not a binary format, not
 Python source.
+
 
 **FR6 — Programmatic MAC address (new API — not covered in lecture).**
 The `Core S3 Device MAC` field in FR5 must be obtained **at runtime,
@@ -182,9 +205,10 @@ Run through this on your **physical CoreS3**:
       both directions, at every position — test each slider across
       its full range, not just one or two positions.
 - [ ] Create Profile button generates `/flash/about_me.md` containing,
-      in order: the 10-field header (with a real, device-obtained MAC
-      address, not a hand-typed one), the three slider selections in
-      words, and a reference to `photo.jpg`.
+      in order: the 10-field header (9 fields hard-coded into your
+      source ahead of time with your real information, plus a
+      device-obtained MAC address — not a hand-typed one), the three
+      slider selections in words, and a reference to `photo.jpg`.
 - [ ] The MAC address in the generated file matches the MAC address
       you can confirm independently (e.g. from the UIFlow2 web
       editor's device info, or from `os.stat`/`dir()` exploration) —
@@ -223,7 +247,7 @@ Run through this on your **physical CoreS3**:
 | 3 | Grade slider (FR3) | 12 correct positions, mapped to the exact list and order specified; label updates correctly and immediately in both directions across the full range | 8 |
 | 4 | Claude Model slider (FR4) | 5 correct positions, mapped to the exact list and order specified; label updates correctly and immediately in both directions across the full range | 8 |
 | 5 | Create Profile button wiring | Button present, correctly dispatches on `CLICKED`, handler wrapped in its own `try`/`except` per Lecture 5 §4 | 6 |
-| 6 | `about_me.md` — header section | Contains the full 10-field header, as Markdown content, every field populated with real information | 12 |
+| 6 | `about_me.md` — header section | Contains the full 10-field header, as Markdown content; the 9 static fields (File, Author, Date Submitted, Purpose, Student Number, Seneca E-mail, Seneca username, Course Code/Section, GitHub URL) are correctly hard-coded with real information, and the MAC field is not a hand-typed/copy-pasted value (checked jointly with criterion 9) | 12 |
 | 7 | `about_me.md` — slider selections section | All three slider selections present, shown in words (not raw index values), clearly labelled | 8 |
 | 8 | `about_me.md` — photo reference section | Clear, correctly-pointing reference to `photo.jpg` from Part A | 6 |
 | 9 | Programmatic MAC address (FR6) | MAC address is obtained at runtime from the device (not hand-typed), correctly formatted, and verified to match the device's actual MAC | 16 |

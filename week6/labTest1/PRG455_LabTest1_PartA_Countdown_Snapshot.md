@@ -21,10 +21,12 @@ A single-screen M5UI application with:
 
 1. A **title**.
 2. A button labelled exactly **"Snapshot"**.
-3. A **countdown display** that appears when Snapshot is pressed,
+3. A **live camera preview**, visible before Snapshot is pressed, so
+   you can actually see what you're about to photograph.
+4. A **countdown display** that appears when Snapshot is pressed,
    showing `5`, `4`, `3`, `2`, `1`, `0`, one value per second, in that
    exact order, then captures a photo the instant it reaches `0`.
-4. The captured photo, saved to the CoreS3's flash filesystem as
+5. The captured photo, saved to the CoreS3's flash filesystem as
    **`photo.jpg`**.
 
 There is no `M5Image` redisplay requirement in Part A — the point of
@@ -43,14 +45,29 @@ button or the countdown display.
 
 **FR2 — Snapshot button.** A button whose visible label is exactly
 **"Snapshot"** (capital S, no other text). Pressing it starts the
-sequence in FR3. Pressing it again while a countdown is already in
+sequence in FR4. Pressing it again while a countdown is already in
 progress is undefined behaviour — you do not need to guard against
 it, but your program must not crash if a student's test script or a
 double-tap triggers it.
 
-**FR3 — Countdown sequence.** On Snapshot press, in order:
+**FR3 — Live camera preview.** Before Snapshot is pressed, and
+whenever a countdown isn't actively running, the screen must show a
+**live camera feed** — not a blank or static area — so the person
+using the device can see what they're about to photograph. Use the
+same `M5.Lcd.show()` pattern from Lecture 5 §3, called every `loop()`
+pass. Per Lecture 5 §1, this draws directly to raw screen coordinates,
+bypassing M5UI entirely, so its rectangle must not overlap any M5UI
+widget's position, on either axis — including the countdown display
+in FR4.
 
-1. Display `5` somewhere clearly visible on screen.
+**FR4 — Countdown sequence.** On Snapshot press, in order:
+
+1. Display `5` somewhere clearly visible on screen, in a region that
+   does **not** overlap the live preview rectangle from FR3 — while
+   the countdown handler is running, `loop()` isn't executing, so the
+   preview will show whatever its last frame was during the count;
+   the countdown digit still must not visually collide with that
+   region.
 2. Wait one second.
 3. Display `4`.
 4. Wait one second.
@@ -65,15 +82,29 @@ while the countdown runs. You do not need `loop()`-driven timing for
 this part. A straightforward `time.sleep(1)` between each displayed
 number is sufficient and is exactly what's expected here.
 
-**FR4 — Save the photo as `photo.jpg`.** Encode the captured frame to
+**A gotcha specific to this part:** setting a label's text with
+`set_text()` only marks it dirty — it does not, by itself, paint
+anything to the physical screen. The actual screen refresh happens as
+part of `M5.update()`, the same call responsible for touch polling in
+every `loop()` you've written so far. If your countdown handler calls
+`set_text()` six times back-to-back with only `time.sleep()` in
+between and **no `M5.update()` call inside the loop**, all six values
+will be computed and set correctly in code, but **none of them will
+ever appear on the physical screen** — the display will jump straight
+from blank to whatever the final state is once the handler returns.
+This is a real, confirmed failure mode on this hardware, not a
+hypothetical: call `M5.update()` after every `set_text()` inside the
+countdown loop, before the `time.sleep()` that follows it.
+
+**FR5 — Save the photo as `photo.jpg`.** Encode the captured frame to
 JPEG and write it to `/flash/photo.jpg` — this exact filename, not a
-variation, since retrieval in FR5 depends on knowing the name in
+variation, since retrieval in FR6 depends on knowing the name in
 advance. Use the encode-and-write pattern from Lecture 5 §4: positional
 `jpg.encode(frame, quality)`, binary write mode (`"wb"`), and a
 `try`/`except` around the whole capture-and-save step so a failure
 here doesn't crash the program silently.
 
-**FR5 — Retrieve the photo to your laptop.** After confirming
+**FR6 — Retrieve the photo to your laptop.** After confirming
 `photo.jpg` exists on the device (e.g. with `os.listdir("/flash")` and
 `os.stat("/flash/photo.jpg")` from the WebTerminal, per Lecture 5
 §4.1), get the actual image file off the CoreS3 and onto your laptop,
@@ -81,7 +112,7 @@ by whatever means the UIFlow2 web editor's device file browser
 provides. **This step is graded** — see Submission Instructions and
 the rubric.
 
-**FR6 — Camera initialization.** `camera.init(pixformat=camera.RGB565,
+**FR7 — Camera initialization.** `camera.init(pixformat=camera.RGB565,
 framesize=camera.QVGA)` in `setup()`, exactly as covered in Lecture 5.
 
 ---
@@ -148,8 +179,9 @@ framesize=camera.QVGA)` in `setup()`, exactly as covered in Lecture 5.
 | # | Criterion | What's checked | Points |
 |---|---|---|---|
 | 1 | Title and Snapshot button | Title visible, no overlap; button present and labelled exactly "Snapshot" | 2 |
-| 2 | Countdown sequence correctness | Displays 5,4,3,2,1,0 in order, one per second, visible and legible at each step | 4 |
-| 3 | Capture timing | Photo is captured at the instant `0` is displayed — not before, not after an extra delay | 2 |
-| 4 | Save correctness | Saved as exactly `/flash/photo.jpg`; positional `jpg.encode()` quality; binary write mode; wrapped in `try`/`except` | 4 |
-| 5 | Retrieval | `photo.jpg` is present in `labTest1/partA/` in the submitted repository, and is the actual photo taken during this test session | 3 |
+| 2 | Live camera preview | Visible and updating continuously before Snapshot is pressed, drawn via `M5.Lcd.show()`, never overlapping any M5UI widget | 2 |
+| 3 | Countdown sequence correctness | Displays 5,4,3,2,1,0 in order, one per second, visible and legible at each step — i.e. actually appears on the physical screen, not just set in code | 4 |
+| 4 | Capture timing | Photo is captured at the instant `0` is displayed — not before, not after an extra delay | 2 |
+| 5 | Save correctness | Saved as exactly `/flash/photo.jpg`; positional `jpg.encode()` quality; binary write mode; wrapped in `try`/`except` | 3 |
+| 6 | Retrieval | `photo.jpg` is present in `labTest1/partA/` in the submitted repository, and is the actual photo taken during this test session | 2 |
 | | **Part A Subtotal** | | **15** |
